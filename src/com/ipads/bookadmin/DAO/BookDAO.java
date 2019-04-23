@@ -1,4 +1,7 @@
 package com.ipads.bookadmin.DAO;
 
-public class BookDAO {
+import com.ipads.bookadmin.entity.Book;
+
+public interface BookDAO extends DAO<Integer,Book> {
+
 }
