@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 public class DatabaseConnection {
     private static final String DBDRIVER = "com.mysql.jdbc.Driver";
-    private static final String DBURL = "jdbc:mysql://localhost:3306/bookadmin";
+    private static final String DBURL = "jdbc:mysql://localhost:3306/booksystem";
     private static final String DBUSER = "root";
-    private static final String DBPASS = "123456";
+    private static final String DBPASS = "password";
 
     private Connection conn;
 
