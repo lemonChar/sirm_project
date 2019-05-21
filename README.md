@@ -12,6 +12,8 @@ Main checkpoint:
 -  13th week
 -  18th week
 
+Jenkins: http://101.95.182.98:10080/
+
 ## Members:
 &emsp;118037910022 [范文韬](https://github.com/FanWT)  
 &emsp;118037910038 [吴逸伦](https://github.com/lemonChar)
