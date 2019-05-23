@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 定义一个工程，默认任务为warFile。 -->
+<project name="books" default="warFile" basedir=".">
+
+    <!-- 定义属性，打成war包的名称。 -->
+    <property name="warFileName" value="books.war"></property>
+
+    <!-- 定义路径，编译java文件时用到的jar包。 -->
+    <path id="project.lib">
+        <fileset dir="${basedir}/libs">
+            <include name="**/*.jar"/>
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- 定义任务，清空任务：清空原有的class文件，创建新的build路径。 -->
+    <target name="clean">
+        <delete dir="${basedir}/web/WEB-INF/classes" />
+        <mkdir dir="${basedir}/web/WEB-INF/classes" />
+    </target>
+
+    <!-- 定义任务，编译src文件夹中的java文件，编译后的class文件放到创建的文件夹下。 -->
+    <target name="build" depends="clean">
+        <javac srcdir="${basedir}/src" destdir="${basedir}/web/WEB-INF/classes" includeantruntime="false" source="1.8" target="1.8">
+            <classpath refid="project.lib">
+            </classpath>
+        </javac>
+
+        <!--复制src/main/java下非java文件到/src/main/webapp/WEB-INF/classes-->
+
+        <copy todir="${basedir}/web/WEB-INF/classes">
+            <fileset dir="${basedir}/src">
+                <include name="**/**.*" />
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- 定义默认任务，将class文件集合成jar包。 -->
+    <target name="warFile" depends="build">
+        <!--将lib文件夹下的jar打包到WEB-INF/lib下 -->
+
+        <copy todir="${basedir}/web/WEB-INF/lib">
+            <fileset dir="${basedir}/libs">
+
+            </fileset>
+        </copy>
+        <!-- 建立新war包。 -->
+        <war destfile="${basedir}/${warFileName}" webxml="${basedir}/web/WEB-INF/web.xml">
+            <!-- 将非jar和非class文件拷贝到war包的对应路径下。 -->
+            <fileset dir="${basedir}/web">
+                <include name="**/**.*" />
+                <exclude name="**/*.jar"/>
+                <exclude name="**/*.class"/>
+            </fileset>
+            <!-- 将jar和class文件拷贝到war包的对应路径下。 -->
+            <lib dir="${basedir}/web/WEB-INF/lib" />
+            <classes dir="${basedir}/web/WEB-INF/classes" />
+        </war>
+    </target>
+
+</project>
