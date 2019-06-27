@@ -2,10 +2,8 @@ package com.ipads.bookadmin.DAO.impl;
 
 import com.ipads.bookadmin.DAO.BookDAO;
 import com.ipads.bookadmin.entity.Book;
-import com.sun.deploy.net.HttpRequest;
 import net.sf.json.JSONObject;
 
-import javax.xml.ws.http.HTTPBinding;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
