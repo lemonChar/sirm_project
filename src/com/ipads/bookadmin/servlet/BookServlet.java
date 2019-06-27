@@ -28,11 +28,13 @@ public class BookServlet extends HttpServlet {
         if(status != null){
             if ("insertPro".equals(status)){
                 path = this.insertPro(request);
+                System.out.println(path);
             }else if("insert".equals(status)){
                 path = this.insert(request,response);
                 System.out.println(path);
             }else if("listSplit".equals(status)){
                 path = this.listSplit(request,response);
+                System.out.println(path);
             }
         }
         request.getRequestDispatcher(path).forward(request,response);
