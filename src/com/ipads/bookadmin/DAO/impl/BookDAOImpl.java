@@ -2,7 +2,18 @@ package com.ipads.bookadmin.DAO.impl;
 
 import com.ipads.bookadmin.DAO.BookDAO;
 import com.ipads.bookadmin.entity.Book;
+import com.sun.deploy.net.HttpRequest;
+import net.sf.json.JSONObject;
 
+import javax.xml.ws.http.HTTPBinding;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,14 +27,79 @@ public class BookDAOImpl extends AbstractDAOImpl implements BookDAO {
         super(conn);
     }
 
+    String baseUrl = "http://localhost:8080/jaxrs/books/";
+
     @Override
-    public boolean doCreate(Book vo) throws SQLException {
-        String sql = "INSERT INTO books(iid,aid,name,credate,status,note)VALUES(?,?,?,?,?,?)";
-        super.pstmt = super.conn.prepareStatement(sql);
-        super.pstmt.setString(3,vo.getName());
-        super.pstmt.setInt(5,vo.getStatus());
-        super.pstmt.setString(6,vo.getNote());
-        return super.pstmt.executeUpdate() > 0;
+    public boolean doCreate(Book vo) throws SQLException{
+
+        System.out.print("bookDao doCreate\n\n\n\n");
+        URL url = null;
+        try {
+            url = new URL(baseUrl);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        HttpURLConnection httpConn = null;
+        try {
+            httpConn = (HttpURLConnection)url.openConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        JSONObject jsonObject = JSONObject.fromObject(vo);
+        System.out.println(jsonObject.toString()); // debug statement
+
+        //httpConn.setRequestProperty("Content-type","application/x-javascript->json");
+        httpConn.setRequestProperty("Content-type","application/json");
+        httpConn.setRequestProperty("Content-length", String.valueOf(jsonObject.toString().length()));
+        httpConn.setDoOutput(true);     //需要输出
+        httpConn.setDoInput(true);      //需要输入
+        httpConn.setUseCaches(false);   //不允许缓存
+        try {
+            httpConn.setRequestMethod("POST");      //设置POST方式连接
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        }
+
+        DataOutputStream dos = null;
+        try {
+            dos = new DataOutputStream(httpConn.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            dos.writeBytes(jsonObject.toString());
+            //dos.write(jsonObject.toString().getBytes());
+            dos.flush();
+            dos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int resultCode = 0;
+        StringBuffer sb = new StringBuffer();
+        try {
+            resultCode = httpConn.getResponseCode();
+            System.out.println(resultCode);
+
+            if (HttpURLConnection.HTTP_OK == resultCode) {
+
+                String readLine = new String();
+                BufferedReader responseReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream(), "UTF-8"));
+                while ((readLine = responseReader.readLine()) != null) {
+                    sb.append(readLine).append("\n");
+                }
+                responseReader.close();
+                System.out.println(sb.toString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (sb.toString().matches("true"))
+            return true;
+
+        return false;
+
     }
 
     @Override
@@ -44,10 +120,10 @@ public class BookDAOImpl extends AbstractDAOImpl implements BookDAO {
     @Override
     public List<Book> findAll() throws SQLException {
         List<Book> all = new ArrayList<Book>();
-        String sql ="SELECT bid,iid,aid,name,credate,status,note FROM books";
+        String sql = "SELECT bid,iid,aid,name,credate,status,note FROM books";
         super.pstmt = super.conn.prepareStatement(sql);
         ResultSet rs = super.pstmt.executeQuery();
-        while (rs.next()){
+        while (rs.next()) {
             Book vo = new Book();
             vo.setBid(rs.getInt(1));
             vo.setName(rs.getString(4));
@@ -65,11 +141,11 @@ public class BookDAOImpl extends AbstractDAOImpl implements BookDAO {
 
     @Override
     public Integer getAllCount(String column, String keyWord) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM books WHERE "+column +" LIKE ?";
+        String sql = "SELECT COUNT(*) FROM books WHERE " + column + " LIKE ?";
         super.pstmt = super.conn.prepareStatement(sql);
-        super.pstmt.setString(1,"%"+keyWord+"%");
+        super.pstmt.setString(1, "%" + keyWord + "%");
         ResultSet rs = super.pstmt.executeQuery();
-        if (rs.next()){
+        if (rs.next()) {
             return rs.getInt(1);
         }
         return 0;
