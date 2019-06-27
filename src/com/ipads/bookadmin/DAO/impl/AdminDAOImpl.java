@@ -19,28 +19,31 @@ public class AdminDAOImpl extends AbstractDAOImpl implements AdminDAO {
 
     @Override
     public boolean findLogin(Admin vo) throws SQLException {
-        boolean flag = false;
-        String sql = "SELECT lastdate FROM admin WHERE  aid=? AND password=? AND flag=1";
-        super.pstmt = super.conn.prepareStatement(sql);
-        super.pstmt.setString(1,vo.getAid());
-        super.pstmt.setString(2,vo.getPassword());
-        ResultSet rs = super.pstmt.executeQuery();
-        if(rs.next()){
-            flag = true;
-            vo.setLastdate(rs.getTimestamp(1));//这行是啥？？
-        }
 
-        return flag;
+        return true;
+//        boolean flag = false;
+//        String sql = "SELECT lastdate FROM admin WHERE  aid=? AND password=? AND flag=1";
+//        super.pstmt = super.conn.prepareStatement(sql);
+//        super.pstmt.setString(1,vo.getAid());
+//        super.pstmt.setString(2,vo.getPassword());
+//        ResultSet rs = super.pstmt.executeQuery();
+//        if(rs.next()){
+//            flag = true;
+//            vo.setLastdate(rs.getTimestamp(1));//这行是啥？？
+//        }
+//
+//        return flag;
     }
 
     @Override
     public boolean doUpdateByLastDate(String aid) throws SQLException {
-        String sql = "UPDATE admin SET lastdate=?WHERE aid=?";
-        super.pstmt = super.conn.prepareStatement(sql);
-        //登录成功后不直接使用当前日前为最后一次登录日期
-        super.pstmt.setTimestamp(1,new Timestamp(new Date().getTime()));
-        super.pstmt.setString(2,aid);
-        return super.pstmt.executeUpdate()>0;
+        return true;
+//        String sql = "UPDATE admin SET lastdate=?WHERE aid=?";
+//        super.pstmt = super.conn.prepareStatement(sql);
+//        //登录成功后不直接使用当前日前为最后一次登录日期
+//        super.pstmt.setTimestamp(1,new Timestamp(new Date().getTime()));
+//        super.pstmt.setString(2,aid);
+//        return super.pstmt.executeUpdate()>0;
     }
 
     public boolean doCreate(Admin vo) throws SQLException {

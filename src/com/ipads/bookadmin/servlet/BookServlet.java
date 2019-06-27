@@ -1,6 +1,10 @@
 package com.ipads.bookadmin.servlet;
 
+import com.ipads.bookadmin.entity.Admin;
+import com.ipads.bookadmin.entity.Book;
+import com.ipads.bookadmin.entity.Item;
 import com.ipads.bookadmin.factory.ServiceFactory;
+import com.ipads.bookadmin.utility.ValidateUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -25,8 +29,8 @@ public class BookServlet extends HttpServlet {
             if ("insertPro".equals(status)){
                 path = this.insertPro(request);
             }else if("insert".equals(status)){
-                System.out.println(path);
                 path = this.insert(request,response);
+                System.out.println(path);
             }else if("listSplit".equals(status)){
                 path = this.listSplit(request,response);
             }
@@ -65,8 +69,45 @@ public class BookServlet extends HttpServlet {
         return "/pages/back/books/books_list.jsp";
     }
 
-    public  String insert(HttpServletRequest request, HttpServletResponse response) { //TODO
-        return null;
+    public  String insert(HttpServletRequest request, HttpServletResponse response) {
+        // msg url ;
+        String msg = "";
+        String url = "";
+        // 取得页面中的数据
+        String name = request.getParameter("name");
+        String aid = request.getParameter("aid");
+        aid = "admin";
+        //Integer iid = Integer.parseInt(request.getParameter("iid"));
+        Integer iid = 0;
+        String note = request.getParameter("note");
+        // 判断数据是否为空
+        if(ValidateUtils.validateEmpty(name) && ValidateUtils.validateEmpty(aid)
+                && ValidateUtils.validateEmpty(note) ){
+            Book vo = new Book();
+            vo.setName(name);
+            Item item = new Item();
+            item.setIid(iid);
+
+            vo.setStatus(1); // 1表示上架 0表示下架操作
+            vo.setNote(note);
+            try {
+                if (ServiceFactory.getBookServiceInstance().insert(vo)){
+                    msg = "数据已经增加成功！";
+                    url = "/pages/back/books/BooksServlet/insertPro";
+                }else{
+                    msg = "你输入的信息有误，请重新输入";
+                    url = "/pages/back/books/BooksServlet/insertPro";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else{
+            msg = "你输入的内容为空，请重新输入";
+            url = "/pages/back/books/BooksServlet/insertPro";
+        }
+        request.setAttribute("msg",msg);
+        request.setAttribute("url",url);
+        return "/pages/forward.jsp";
     }
 
     public String insertPro(HttpServletRequest request)  {
