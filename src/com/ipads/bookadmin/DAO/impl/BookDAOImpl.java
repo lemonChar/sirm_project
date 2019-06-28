@@ -31,7 +31,7 @@ public class BookDAOImpl extends AbstractDAOImpl implements BookDAO {
     @Override
     public boolean doCreate(Book vo) throws SQLException{
 
-        System.out.print("bookDao doCreate\n\n\n\n");
+        System.out.print("bookDao doCreate\n"+baseUrl+"\n\n\n");
         URL url = null;
         try {
             url = new URL(baseUrl);
