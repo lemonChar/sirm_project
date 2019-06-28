@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service1 
+  namespace: default
+  labels:
+    app: service1
+spec: 
+  type: NodePort
+  ports:
+  - port: 30684 
+    nodePort: 30684 
+  selector:
+    app: service1
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service1
+  labels:
+    app: service1
+spec:
+  selector:
+    matchLabels:
+      app: service1
+  template:
+    metadata:
+      labels:
+        app: service1
+    spec:
+      hostname: myhost
+      containers:
+      - name: service1
+        image: docker.io/hm773/test
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080 
+
