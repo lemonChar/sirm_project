@@ -1,9 +1,10 @@
 package com.ipads.bookadmin.DAO.impl;
 
-
 import com.ipads.bookadmin.DAO.IMemberDao;
 import com.ipads.bookadmin.entity.Member;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,14 +19,72 @@ public class MemberDaoImpl extends AbstractDAOImpl implements IMemberDao {
 
     @Override
     public boolean doCreate(Member vo) throws SQLException {
-        String sql = "INSERT INTO member(mid,name,age,sex,phone) VALUES(?,?,?,?,?)";
-        super.pstmt = super.conn.prepareStatement(sql);
-        super.pstmt.setString(1,vo.getMid());
-        super.pstmt.setString(2,vo.getName());
-        super.pstmt.setInt(3,vo.getAge());
-        super.pstmt.setInt(4,vo.getSex());
-        super.pstmt.setString(5,vo.getPhone());
-        return super.pstmt.executeUpdate()>0;
+        URL url = null;
+        try {
+            url = new URL(baseUrl);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        HttpURLConnection httpConn = null;
+        try {
+            httpConn = (HttpURLConnection)url.openConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        JSONObject jsonObject = JSONObject.fromObject(vo);
+        System.out.println(jsonObject.toString()); // debug statement
+
+        //httpConn.setRequestProperty("Content-type","application/x-javascript->json");
+        httpConn.setRequestProperty("Content-type","application/json");
+        httpConn.setRequestProperty("Content-length", String.valueOf(jsonObject.toString().length()));
+        httpConn.setDoOutput(true);     //需要输出
+        httpConn.setDoInput(true);      //需要输入
+        httpConn.setUseCaches(false);   //不允许缓存
+        try {
+            httpConn.setRequestMethod("POST");      //设置POST方式连接
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        }
+
+        DataOutputStream dos = null;
+        try {
+            dos = new DataOutputStream(httpConn.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            dos.writeBytes(jsonObject.toString());
+            //dos.write(jsonObject.toString().getBytes());
+            dos.flush();
+            dos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int resultCode = 0;
+        StringBuffer sb = new StringBuffer();
+        try {
+            resultCode = httpConn.getResponseCode();
+            System.out.println(resultCode);
+
+            if (HttpURLConnection.HTTP_OK == resultCode) {
+
+                String readLine = new String();
+                BufferedReader responseReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream(), "UTF-8"));
+                while ((readLine = responseReader.readLine()) != null) {
+                    sb.append(readLine).append("\n");
+                }
+                responseReader.close();
+                System.out.println(sb.toString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (sb.toString().matches("true"))
+            return true;
+
+        return false;
     }
 
     @Override
@@ -41,9 +100,69 @@ public class MemberDaoImpl extends AbstractDAOImpl implements IMemberDao {
     @Override
     public Member findById(String id) throws SQLException {
         Member vo = null;
-        String sql = "SELECT mid,name,age,sex,phone FROM member WHERE mid=?";
-        super.pstmt = super.conn.prepareStatement(sql);
-        super.pstmt.setString(1,id);
+        URL url = null;
+        try {
+            url = new URL(baseUrl);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        HttpURLConnection httpConn = null;
+        try {
+            httpConn = (HttpURLConnection)url.openConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        JSONObject jsonObject = JSONObject.fromObject(id);
+        System.out.println(jsonObject.toString()); // debug statement
+
+        //httpConn.setRequestProperty("Content-type","application/x-javascript->json");
+        httpConn.setRequestProperty("Content-type","application/json");
+        httpConn.setRequestProperty("Content-length", String.valueOf(jsonObject.toString().length()));
+        httpConn.setDoOutput(true);     //需要输出
+        httpConn.setDoInput(true);      //需要输入
+        httpConn.setUseCaches(false);   //不允许缓存
+        try {
+            httpConn.setRequestMethod("POST");      //设置POST方式连接
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        }
+
+        DataOutputStream dos = null;
+        try {
+            dos = new DataOutputStream(httpConn.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            dos.writeBytes(jsonObject.toString());
+            //dos.write(jsonObject.toString().getBytes());
+            dos.flush();
+            dos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int resultCode = 0;
+        StringBuffer sb = new StringBuffer();
+        try {
+            resultCode = httpConn.getResponseCode();
+            System.out.println(resultCode);
+
+            if (HttpURLConnection.HTTP_OK == resultCode) {
+
+                String readLine = new String();
+                BufferedReader responseReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream(), "UTF-8"));
+                while ((readLine = responseReader.readLine()) != null) {
+                    sb.append(readLine).append("\n");
+                }
+                responseReader.close();
+                System.out.println(sb.toString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
         ResultSet rs = super.pstmt.executeQuery();
         if (rs.next()){
             vo = new Member();
@@ -58,9 +177,48 @@ public class MemberDaoImpl extends AbstractDAOImpl implements IMemberDao {
 
     @Override
     public List<Member> findAll() throws SQLException {
+        URL url = null;
+        try {
+            url = new URL(baseUrl);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        HttpURLConnection httpConn = null;
+        try {
+            httpConn = (HttpURLConnection)url.openConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        httpConn.setDoOutput(true);     //需要输出
+        httpConn.setDoInput(true);      //需要输入
+        httpConn.setUseCaches(false);   //不允许缓存
+        try {
+            httpConn.setRequestMethod("POST");      //设置POST方式连接
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        }
+
+        int resultCode = 0;
         List<Member> all = new ArrayList<Member>();
-        String sql = "select mid,name from member";
-        super.pstmt = super.conn.prepareStatement(sql);
+        try {
+            resultCode = httpConn.getResponseCode();
+            System.out.println(resultCode);
+
+            if (HttpURLConnection.HTTP_OK == resultCode) {
+
+                String readLine = new String();
+                BufferedReader responseReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream(), "UTF-8"));
+                while ((readLine = responseReader.readLine()) != null) {
+                    sb.append(readLine).append("\n");
+                }
+                responseReader.close();
+                System.out.println(sb.toString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         ResultSet rs =super.pstmt.executeQuery();
         while(rs.next()){
             Member vo = new Member();
