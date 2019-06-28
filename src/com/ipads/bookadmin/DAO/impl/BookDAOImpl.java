@@ -238,7 +238,7 @@ public class BookDAOImpl extends AbstractDAOImpl implements BookDAO {
             e.printStackTrace();
         }
 
-        
+
         String sql = "SELECT COUNT(*) FROM books WHERE " + column + " LIKE ?";
         super.pstmt = super.conn.prepareStatement(sql);
         super.pstmt.setString(1, "%" + keyWord + "%");

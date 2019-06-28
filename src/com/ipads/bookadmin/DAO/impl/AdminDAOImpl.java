@@ -3,6 +3,8 @@ package com.ipads.bookadmin.DAO.impl;
 import com.ipads.bookadmin.DAO.AdminDAO;
 import com.ipads.bookadmin.entity.Admin;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -66,6 +68,36 @@ public class AdminDAOImpl extends AbstractDAOImpl implements AdminDAO {
     }
 
     public List<Admin> findAll() throws SQLException {
+        URL url = null;
+        try {
+            url = new URL(baseUrl);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        HttpURLConnection httpConn = null;
+        try {
+            httpConn = (HttpURLConnection)url.openConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        httpConn.setDoOutput(true);     //需要输出
+        httpConn.setDoInput(true);      //需要输入
+        httpConn.setUseCaches(false);   //不允许缓存
+        try {
+            httpConn.setRequestMethod("POST");      //设置POST方式连接
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        }
+
+        DataOutputStream dos = null;
+        try {
+            dos = new DataOutputStream(httpConn.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int resultCode = 0;
         List<Admin> all = new ArrayList<Admin>();
         String sql = "SELECT aid,password,lastdate,flag,status FROM admin";
         super.pstmt = super.conn.prepareStatement(sql);
