@@ -117,6 +117,56 @@ public class BookDAOImpl extends AbstractDAOImpl implements BookDAO {
 
     @Override
     public List<Book> findAll() throws SQLException {
+        URL url = null;
+        try {
+            url = new URL(baseUrl);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        HttpURLConnection httpConn = null;
+        try {
+            httpConn = (HttpURLConnection)url.openConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        httpConn.setDoOutput(true);     //需要输出
+        httpConn.setDoInput(true);      //需要输入
+        httpConn.setUseCaches(false);   //不允许缓存
+        try {
+            httpConn.setRequestMethod("POST");      //设置POST方式连接
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        }
+
+        DataOutputStream dos = null;
+        try {
+            dos = new DataOutputStream(httpConn.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int resultCode = 0;
+        StringBuffer sb = new StringBuffer();
+        try {
+            resultCode = httpConn.getResponseCode();
+            System.out.println(resultCode);
+
+            if (HttpURLConnection.HTTP_OK == resultCode) {
+
+                String readLine = new String();
+                BufferedReader responseReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream(), "UTF-8"));
+                while ((readLine = responseReader.readLine()) != null) {
+                    sb.append(readLine).append("\n");
+                }
+                responseReader.close();
+                System.out.println(sb.toString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //prepare for result
         List<Book> all = new ArrayList<Book>();
         String sql = "SELECT bid,iid,aid,name,credate,status,note FROM books";
         super.pstmt = super.conn.prepareStatement(sql);
@@ -139,6 +189,56 @@ public class BookDAOImpl extends AbstractDAOImpl implements BookDAO {
 
     @Override
     public Integer getAllCount(String column, String keyWord) throws SQLException {
+        URL url = null;
+        try {
+            url = new URL(baseUrl);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        HttpURLConnection httpConn = null;
+        try {
+            httpConn = (HttpURLConnection)url.openConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        httpConn.setDoOutput(true);     //需要输出
+        httpConn.setDoInput(true);      //需要输入
+        httpConn.setUseCaches(false);   //不允许缓存
+        try {
+            httpConn.setRequestMethod("POST");      //设置POST方式连接
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        }
+
+        DataOutputStream dos = null;
+        try {
+            dos = new DataOutputStream(httpConn.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int resultCode = 0;
+        StringBuffer sb = new StringBuffer();
+        try {
+            resultCode = httpConn.getResponseCode();
+            System.out.println(resultCode);
+
+            if (HttpURLConnection.HTTP_OK == resultCode) {
+
+                String readLine = new String();
+                BufferedReader responseReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream(), "UTF-8"));
+                while ((readLine = responseReader.readLine()) != null) {
+                    sb.append(readLine).append("\n");
+                }
+                responseReader.close();
+                System.out.println(sb.toString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        
         String sql = "SELECT COUNT(*) FROM books WHERE " + column + " LIKE ?";
         super.pstmt = super.conn.prepareStatement(sql);
         super.pstmt.setString(1, "%" + keyWord + "%");
