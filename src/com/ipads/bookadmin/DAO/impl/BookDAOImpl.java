@@ -26,12 +26,12 @@ public class BookDAOImpl extends AbstractDAOImpl implements BookDAO {
     }
 
     //String baseUrl = "http://localhost:8080/jaxrs/books/";
-    String baseUrl = "http://192.168.2.68:30685/jaxrs/books/";
+    String baseUrl = "http://service2:30685/jaxrs/books/";
 
     @Override
     public boolean doCreate(Book vo) throws SQLException{
 
-        System.out.print("bookDao doCreate\n\n\n\n");
+        System.out.print("bookDao doCreate\n"+baseUrl+"\n\n\n");
         URL url = null;
         try {
             url = new URL(baseUrl);
